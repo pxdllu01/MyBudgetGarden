@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#173b32">
+<title>My Money Tracker</title>
+<style>
+:root{--bg:#f4f7f3;--card:#fff;--ink:#18352e;--muted:#66776f;--green:#246b50;--pale:#e5f2e9;--line:#e1e9e2;--red:#b44747;--gold:#f4c96b}
+*{box-sizing:border-box}[hidden]{display:none!important}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}input[type="color"]{height:44px;padding:4px;cursor:pointer}
+header{background:linear-gradient(140deg,#173b32,#2c7658);color:white;padding:26px 18px 24px;border-radius:0 0 25px 25px}
+.wrap{max-width:760px;margin:auto}header .eyebrow{font-size:12px;letter-spacing:1.6px;text-transform:uppercase;opacity:.8}h1{font-size:27px;margin:5px 0 4px}header p{margin:0;opacity:.85;font-size:14px}
+main{padding:16px;max-width:760px;margin:auto}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.card{background:var(--card);border:1px solid var(--line);border-radius:17px;padding:15px;box-shadow:0 3px 12px #163a2d08;margin-bottom:13px}.stat-label{font-size:12px;color:var(--muted)}.stat{font-size:24px;font-weight:750;margin-top:5px;overflow-wrap:anywhere}.sub{font-size:12px;color:var(--muted);margin-top:3px}.section-title{font-size:17px;margin:2px 0 12px}.row{display:flex;gap:10px}.row>*{flex:1;min-width:0}label{display:block;font-size:12px;color:var(--muted);margin:10px 0 5px}input,select,textarea{width:100%;font:inherit;font-size:14px;border:1px solid #d6e1d8;border-radius:11px;padding:11px;background:#fff;color:var(--ink)}button{border:0;border-radius:11px;padding:12px 14px;font:inherit;font-weight:650;cursor:pointer}.primary{background:var(--green);color:#fff;width:100%;margin-top:13px}.secondary{background:var(--pale);color:var(--green)}.danger{background:#faeaea;color:var(--red)}.progress{height:9px;background:#e8eee9;border-radius:9px;overflow:hidden;margin:11px 0 5px}.progress span{height:100%;display:block;background:#3b9168;border-radius:9px;width:0%}.muted{color:var(--muted);font-size:12px}.item{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--line)}.item:last-child{border-bottom:0}.dot{width:38px;height:38px;display:grid;place-items:center;border-radius:12px;background:var(--pale);font-size:18px;flex-shrink:0}.details{flex:1;min-width:0}.details b{display:block;font-size:14px;overflow-wrap:anywhere}.details small{color:var(--muted);font-size:11px}.amount{font-weight:750;white-space:nowrap}.minus{color:var(--red)}.plus{color:var(--green)}.empty{text-align:center;padding:18px;color:var(--muted);font-size:13px}.actions{display:flex;gap:8px;flex-wrap:wrap}.actions button{flex:1}.note{background:#fff8e6;border:1px solid #f2e4bd;padding:12px;border-radius:12px;font-size:12px;line-height:1.5;margin-bottom:13px}.footer{text-align:center;color:var(--muted);font-size:11px;padding:8px 0 24px}
+.chart-wrap{width:100%;position:relative;margin:8px 0}.chart-wrap canvas{display:block;width:100%;max-width:100%;height:230px}.legend{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.legend-item{display:flex;align-items:center;gap:7px;font-size:12px;min-width:0}.swatch{width:11px;height:11px;border-radius:3px;flex-shrink:0}.tip{margin-top:12px;padding:11px;border-radius:12px;background:var(--pale);font-size:13px;line-height:1.5}.goal-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:14px 0}.goal-stats>div{background:var(--bg);padding:10px;border-radius:12px;min-width:0}.goal-stats b{display:block;margin-top:5px;font-size:14px;overflow-wrap:anywhere}.stat-label{line-height:1.4}.empty{text-align:center;padding:14px;color:var(--muted);font-size:13px}@media(max-width:380px){.goal-stats{grid-template-columns:1fr}.legend{grid-template-columns:1fr}}@media(min-width:600px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}.stat{font-size:22px}}
+</style>
+</head>
+<body>
+<header><div class="wrap"><div class="eyebrow" id="siteEyebrow">Your personal budget</div><h1 id="siteTitle">🌿 My Money Tracker</h1><p id="siteSubtitle">Small steps today, more savings tomorrow.</p></div></header>
+<main>
+
+  <div class="grid">
+    <div class="card"><div class="stat-label">Money left this week</div><div class="stat" id="left">₱300</div><div class="sub">From your weekly budget</div></div>
+    <div class="card"><div class="stat-label">Saved so far</div><div class="stat" id="saved">₱0</div><div class="sub">Your savings balance</div></div>
+    <div class="card"><div class="stat-label">Spent this week</div><div class="stat" id="spent">₱0</div><div class="sub">Expenses recorded</div></div>
+    <div class="card"><div class="stat-label">Weekly budget</div><div class="stat" id="budgetDisplay">₱300</div><div class="sub">Your spending limit</div></div>
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">📅 Weekly plan</h2>
+    <div class="row"><div><div class="stat-label">Transport plan</div><b>₱75 × 3 school days = ₱225</b></div><div><div class="stat-label">Savings goal</div><b id="goalDisplay">₱60 / week</b></div></div>
+    <div class="progress"><span id="progressBar"></span></div><div class="muted" id="progressText">0% of your weekly savings goal</div>
+    <p class="muted">Suggested split: ₱225 transport · ₱60 savings · ₱15 reserve. Adjust these amounts in Settings below.</p>
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">🥧 Where your money goes</h2>
+    <p class="muted">This week's expenses by category. Add expenses using the form below to see your chart update.</p>
+    <div class="chart-wrap"><canvas id="expensePie" height="230" aria-label="Pie chart of weekly expenses by category"></canvas></div>
+    <div id="categoryLegend" class="legend"><div class="empty">No expenses recorded this week yet.</div></div>
+    <div id="spendingTip" class="tip" aria-live="polite">Add expenses to get a suggestion about where you might save.</div>
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">📈 Savings progress & goal estimate</h2>
+    <p class="muted">An estimate based on your current savings and the amount you plan to save each week. It is a guide, not a guarantee.</p>
+    <div class="row"><div><label for="targetGoal">My savings target (₱)</label><input id="targetGoal" type="number" min="0" step="1" value="1000"></div><div><label for="weeklySavingPlan">Planned savings per week (₱)</label><input id="weeklySavingPlan" type="number" min="0" step="1" value="60"></div></div>
+    <button class="primary" id="saveGoalPlan" type="button">Update goal estimate</button>
+    <div class="goal-stats"><div><span class="stat-label">Estimated time remaining</span><b id="timeToGoal">—</b></div><div><span class="stat-label">Suggested per day</span><b id="perDayGoal">—</b></div><div><span class="stat-label">Suggested per month</span><b id="perMonthGoal">—</b></div></div>
+    <div class="chart-wrap"><canvas id="savingsLine" height="220" aria-label="Line graph showing projected savings progress"></canvas></div>
+    <p class="muted" id="goalAdvice" aria-live="polite">Set a target and weekly savings plan to see your estimate.</p>
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">➕ Add a transaction</h2>
+    <form id="entryForm">
+      <div class="row"><div><label for="kind">Type</label><select id="kind"><option value="expense">Expense</option><option value="income">Money received</option><option value="saving">Add to savings</option><option value="withdraw">Withdraw from savings</option></select></div><div><label for="amount">Amount (₱)</label><input id="amount" type="number" min="0.01" step="0.01" placeholder="e.g. 15" required></div></div>
+      <div class="row"><div><label for="category">Category</label><select id="category"><option>Transport</option><option>Food</option><option>School</option><option>Personal</option><option>Family</option><option>Other</option></select></div><div><label for="date">Date</label><input id="date" type="date" required></div></div>
+      <label for="noteInput">Note (optional)</label><input id="noteInput" maxlength="80" placeholder="e.g. Jeepney fare home">
+      <button class="primary" type="submit">Save transaction</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">⚙️ Budget settings</h2>
+    <div class="row"><div><label for="weeklyBudget">Weekly money (₱)</label><input id="weeklyBudget" type="number" min="0" step="1" value="300"></div><div><label for="weeklyGoal">Weekly savings goal (₱)</label><input id="weeklyGoal" type="number" min="0" step="1" value="60"></div></div>
+    <div class="row"><div><label for="schoolDays">School days per week</label><input id="schoolDays" type="number" min="0" max="7" step="1" value="3"></div><div><label for="fareDay">Transport per school day (₱)</label><input id="fareDay" type="number" min="0" step="1" value="75"></div></div>
+    <button class="primary" id="saveSettings" type="button">Save settings</button>
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">🔐 Your data</h2>
+    <p class="muted">Your entries stay in this browser on this device. Export a backup or clear your local records whenever you need.</p>
+    <div class="actions" style="margin-top:12px"><button class="secondary" id="exportBtn" type="button">Export my data (CSV)</button><button class="danger" id="clearBtn" type="button">Delete my records</button></div>
+  </div>
+  <div class="note">🔒 <b>Your privacy:</b> records are saved in this browser on this phone using local storage. They don't automatically sync to another device. Clearing browser data or switching browsers may erase them, so use Export CSV for a backup.</div>
+  <div class="footer">Made for your ₱300 weekly budget · You can edit the plan any time.</div>
+</main>
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const peso=n=>'₱'+Number(n||0).toLocaleString('en-PH',{maximumFractionDigits:2});
+const today=()=>{let d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+let settings={budget:300,goal:60,days:3,fare:75,target:1000,plan:60};
+let entries=[];
+try{settings={...settings,...JSON.parse(localStorage.getItem('mmt_settings')||'{}')};entries=JSON.parse(localStorage.getItem('mmt_entries')||'[]');}catch(e){}
+$('date').value=today();
+function persist(){try{localStorage.setItem('mmt_settings',JSON.stringify(settings));localStorage.setItem('mmt_entries',JSON.stringify(entries));}catch(e){alert('This browser may not allow saving data. Export a CSV backup regularly.');}}
+function weekStart(dateStr){let d=new Date(dateStr+'T12:00:00');let day=(d.getDay()+6)%7;d.setDate(d.getDate()-day);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function render(){
+const now=today(), wk=weekStart(now), week=entries.filter(e=>weekStart(e.date)===wk);
+const spent=week.filter(e=>e.kind==='expense').reduce((s,e)=>s+e.amount,0);
+const received=week.filter(e=>e.kind==='income').reduce((s,e)=>s+e.amount,0);
+const left=settings.budget-spent+received;
+const saved=entries.reduce((s,e)=>s+(e.kind==='saving'?e.amount:e.kind==='withdraw'?-e.amount:0),0);
+const weekSaved=week.reduce((s,e)=>s+(e.kind==='saving'?e.amount:e.kind==='withdraw'?-e.amount:0),0);
+$('left').textContent=peso(left);$('spent').textContent=peso(spent);$('saved').textContent=peso(saved);$('budgetDisplay').textContent=peso(settings.budget);$('goalDisplay').textContent=peso(settings.goal)+' / week';
+let pct=settings.goal>0?Math.max(0,Math.min(100,weekSaved/settings.goal*100)):0;$('progressBar').style.width=pct+'%';$('progressText').textContent=Math.round(pct)+'% of weekly savings goal ('+peso(weekSaved)+' saved this week)';
+$('weeklyBudget').value=settings.budget;$('weeklyGoal').value=settings.goal;$('schoolDays').value=settings.days;$('fareDay').value=settings.fare;
+drawCharts(week, saved);
+
+}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+const chartColors=['#367a5b','#e5a94d','#568ac7','#c56a6a','#9b82c5','#7e9c8b'];
+function drawCharts(week, saved){
+  const canvas=$('expensePie'), ctx=canvas.getContext('2d');
+  const box=canvas.getBoundingClientRect(), dpr=window.devicePixelRatio||1, w=Math.max(260,Math.floor(box.width||300)), h=230;
+  canvas.width=w*dpr;canvas.height=h*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);
+  const cats={};week.filter(e=>e.kind==='expense').forEach(e=>{const c=e.category||'Other';cats[c]=(cats[c]||0)+Number(e.amount||0)});
+  const items=Object.entries(cats).filter(x=>x[1]>0).sort((a,b)=>b[1]-a[1]);const total=items.reduce((a,x)=>a+x[1],0);
+  $('categoryLegend').innerHTML='';
+  if(!total){ctx.fillStyle='#66776f';ctx.font='14px system-ui';ctx.textAlign='center';ctx.fillText('No expenses this week yet',w/2,h/2);$('categoryLegend').innerHTML='<div class="empty">Your category breakdown will appear after you add expenses.</div>';$('spendingTip').textContent='Tip: choose a category each time you record an expense, such as Food or Transport.';}
+  else {
+    let angle=-Math.PI/2;const r=Math.min(82,w*.27),cx=w/2,cy=h/2;
+    items.forEach(([name,val],i)=>{const sweep=val/total*Math.PI*2;ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,angle,angle+sweep);ctx.closePath();ctx.fillStyle=chartColors[i%chartColors.length];ctx.fill();angle+=sweep;
+      const row=document.createElement('div');row.className='legend-item';row.innerHTML='<span class="swatch" style="background:'+chartColors[i%chartColors.length]+'"></span><span>'+esc(name)+': <b>'+peso(val)+'</b> ('+Math.round(val/total*100)+'%)</span>';$('categoryLegend').appendChild(row);
+    });
+    const [topName,topVal]=items[0];const saveable=Math.max(0,topVal*.15);
+    $('spendingTip').textContent='Your biggest expense category is '+topName+' ('+peso(topVal)+', '+Math.round(topVal/total*100)+'% of this week’s expenses). If it is flexible, reducing it by 10–15% could free up about '+peso(saveable)+' per week. Keep essentials and necessary transport covered first.';
+  }
+  drawSavingsLine(saved);
+  const target=Math.max(0,Number(settings.target)||0), plan=Math.max(0,Number(settings.plan)||0), current=Math.max(0,saved), remaining=Math.max(0,target-current);
+  $('targetGoal').value=target;$('weeklySavingPlan').value=plan;
+  if(remaining===0){$('timeToGoal').textContent='Goal reached!';$('goalAdvice').textContent='You have reached or passed your target. You can set a new goal any time.';}
+  else if(plan>0){const weeks=Math.ceil(remaining/plan);$('timeToGoal').textContent=weeks+' week'+(weeks===1?'':'s');$('goalAdvice').textContent='At '+peso(plan)+' per week, you may reach '+peso(target)+' in about '+weeks+' week'+(weeks===1?'':'s')+'. Consider a smaller weekly target if this amount strains your budget.';}
+  else {$('timeToGoal').textContent='Set a weekly plan';$('goalAdvice').textContent='Enter an amount you can comfortably save each week to estimate your timeline.';}
+  $('perDayGoal').textContent=remaining===0?peso(0):peso(remaining/Math.max(1,Math.ceil(remaining/Math.max(plan,1))*7));
+  $('perMonthGoal').textContent=remaining===0?peso(0):peso(remaining/Math.max(1,Math.ceil(remaining/Math.max(plan,1)))*4.345);
+}
+function drawSavingsLine(saved){
+  const c=$('savingsLine'),ctx=c.getContext('2d'),box=c.getBoundingClientRect(),dpr=window.devicePixelRatio||1,w=Math.max(260,Math.floor(box.width||300)),h=220;
+  c.width=w*dpr;c.height=h*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);
+  const target=Math.max(0,Number(settings.target)||0),plan=Math.max(0,Number(settings.plan)||0),current=Math.max(0,saved),left=Math.max(0,target-current);
+  const pad={l:44,r:14,t:16,b:32},pw=w-pad.l-pad.r,ph=h-pad.t-pad.b,max=Math.max(target,current+plan*4,100);
+  ctx.strokeStyle='#e1e9e2';ctx.lineWidth=1;ctx.fillStyle='#66776f';ctx.font='10px system-ui';ctx.textAlign='right';
+  for(let i=0;i<4;i++){let y=pad.t+ph*i/3;ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(w-pad.r,y);ctx.stroke();ctx.fillText(peso(max*(1-i/3)),pad.l-6,y+3);}
+  const pts=[];for(let i=0;i<=6;i++){pts.push([pad.l+pw*i/6,pad.t+ph-(Math.min(max,current+plan*i)/max)*ph]);}
+  ctx.strokeStyle='#367a5b';ctx.lineWidth=3;ctx.lineJoin='round';ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));ctx.stroke();ctx.fillStyle='#367a5b';pts.forEach(p=>{ctx.beginPath();ctx.arc(p[0],p[1],3,0,Math.PI*2);ctx.fill();});
+  ctx.fillStyle='#66776f';ctx.textAlign='center';['Now','1w','2w','3w','4w','5w','6w'].forEach((t,i)=>ctx.fillText(t,pad.l+pw*i/6,h-10));
+  if(target>0&&current>=target){ctx.fillStyle='#367a5b';ctx.textAlign='center';ctx.font='bold 12px system-ui';ctx.fillText('Target reached',w/2,h/2);}
+}
+$('saveGoalPlan').addEventListener('click',()=>{settings.target=Math.max(0,Number($('targetGoal').value)||0);settings.plan=Math.max(0,Number($('weeklySavingPlan').value)||0);persist();render();});
+window.addEventListener('resize',()=>{const wk=entries.filter(e=>weekStart(e.date)===weekStart(today()));const saved=entries.reduce((s,e)=>s+(e.kind==='saving'?e.amount:e.kind==='withdraw'?-e.amount:0),0);drawCharts(wk,saved);});
+
+$('entryForm').addEventListener('submit',e=>{
+e.preventDefault();let amount=Number($('amount').value);if(!Number.isFinite(amount)||amount<=0)return;
+entries.push({id:String(Date.now())+Math.random().toString(16).slice(2),kind:$('kind').value,amount,category:$('category').value,date:$('date').value||today(),note:$('noteInput').value.trim()});
+persist();$('amount').value='';$('noteInput').value='';render();
+});
+$('saveSettings').addEventListener('click',()=>{
+settings={budget:Math.max(0,Number($('weeklyBudget').value)||0),goal:Math.max(0,Number($('weeklyGoal').value)||0),days:Math.max(0,Math.min(7,Number($('schoolDays').value)||0)),fare:Math.max(0,Number($('fareDay').value)||0),target:Math.max(0,Number($('targetGoal').value)||0),plan:Math.max(0,Number($('weeklySavingPlan').value)||0)};
+persist();render();alert('Budget settings saved.');
+});
+$('clearBtn').addEventListener('click',()=>{if(confirm('Delete ALL transaction records? This cannot be undone. Export a CSV backup first if needed.')){entries=[];persist();render();}});
+$('exportBtn').addEventListener('click',()=>{
+let rows=[['Date','Type','Category','Amount PHP','Note'],...entries.map(e=>[e.date,e.kind,e.category,e.amount,e.note])];
+let csv=rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');
+let blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='my-money-tracker.csv';a.click();URL.revokeObjectURL(url);
+});
+
+
+render();
+})();
+</script>
+</body>
+</html>
